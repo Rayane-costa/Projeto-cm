@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title></title>
+        <script src="js/campo-minado.js"></script>
+    </head>
+    <body>
+        <div id="exibir-execucao"></div>
+
+        <script>
+            var campoMinado = new CampoMinado();
+            
+            
+            document.getElementById('exibir-execucao').innerHTML += '----------- Início do jogo -----------';
+            document.getElementById('exibir-execucao').innerHTML += '<pre>' + campoMinado.Tabuleiro() + '</pre>';
+            
+            // Realize sua codificação a partir deste ponto, boa sorte!
+
+function acharNumeroDaLinha(pos){
+    return(pos/9) + 1;
+}
+
+function acharNumeroDaColuna(linha, posicao){
+    if(linha == 1){
+        posicao + 1; 
+    }
+    else{
+        posicao - ((linha-1) * 9) + 1;
+    }
+}
+
+var posicoesFechadas = [];
+var posicoesBombas = [];
+var posicoesEmAberto = [];
+
+while(campoMinado.JogoStatus() == 0){
+    var tabuleiro = campoMinado.Tabuleiro().split('/r/n').join('');
+    document.getElementById('exibir-execucao').innerHTML += '----------- Jogo em aberto -----------';
+    document.getElementById('exibir-execucao').innerHTML += '<pre>' + campoMinado.Tabuleiro() + '</pre>';
+ 
+
+    for(var i = 0; i < 81; i++){
+        var linha;  
+        var coluna;  
+
+        if(i % 9 == 0){
+            linha = acharNumeroDaLinha(i);
+        }
+
+        coluna = acharNumeroDaColuna(linha, i);
+
+
+        //se
+        if(linha > 1 && coluna > 1 && tabuleiro[i -10] == "-"){
+            posicoesFechadas.push(i - 10);
+        }
+        //s
+        if(linha > 1 && tabuleiro[i - 9] == "-"){
+            posicoesFechadas.push(i - 9);
+        }
+        //sd
+        if(linha > 1 && coluna < 9 && tabuleiro[i - 8] == "-"){
+            posicoesFechadas.push(i - 8);
+        }
+        //d
+        if(coluna < 9 && tabuleiro[i + 1] == "-"){
+            posicoesFechadas.push(i + 1);
+        }
+        //bi
+        if(linha < 9 && coluna < 9 && tabuleiro[i + 10] == "-"){
+            posicoesFechadas.push(i + 10);
+        }
+        //b
+        if(linha < 9 && tabuleiro[i + 9] == "-"){
+            posicoesFechadas.push(i + 9);
+        }
+        //be
+        if(linha < 9 && coluna > 1 && tabuleiro[i + 8] == "-"){
+            posicoesFechadas.push(i + 8)
+        }
+        //es{       
+        if(coluna > 1 && tabuleiro[i - 1] == "-"){
+            posicoesFechadas.push(i - 1)
+        }
+
+
+        if(posicoesFechadas.length == tabuleiro[i]){
+            console.log(posicoesFechadas);
+            for(var j = 0; posicoesFechadas.length >= j; j++){
+                posicoesBombas.push(posicoesFechadas[j]);
+              
+                var linhaBomba = acharNumeroDaLinha(posicoesFechadas[j]);
+                var colunaBomba = acharNumeroDaColuna(linhaBomba, posicoesFechadas[j]); 
+            
+                document.getElementById('exibir-execucao').innerHTML += '<pre>' + "Casas com bombas: linha [" + linhaBomba + "] coluna [" + colunaBomba + "]" + '</pre>';
+
+            }
+
+            
+        }
+        
+        if(posicoesFechadas.length > tabuleiro[i]){
+            var casasParaAbrir = posicoesFechadas.filter(y => !posicoesBombas.includes(y))
+
+            if((posicoesFechadas.length - tabuleiro[i]) == casasParaAbrir.length){
+                
+                for(var j = 0; casasParaAbrir.length >= j; j++){
+                    var linhaAbrir = acharNumeroDaLinha(casasParaAbrir[j]);
+                    var colunaAbrir = acharNumeroDaColuna(linhaAbrir, casasParaAbrir[j]); 
+        
+                    document.getElementById('exibir-execucao').innerHTML += '<pre>' + "Abrindo casas: linha [" + linhaAbrir + "] coluna [" + colunaAbrir + "]" + '</pre>';
+                    campoMinado.Abrir(linhaAbrir, colunaAbrir);
+                }    
+            }
+        }
+        posicoesFechadas = [];           
+
+
+    }
+    teste = teste++;
+}
+
+        </script>
+    </body>
+</html>
